@@ -2,7 +2,7 @@
 
 ### Objective
 
-Use a RaspberryPi as a web server and pushing data to clients on the same network
+Use a RaspberryPi as a web server and push data in real time to clients on the same network
 
 ### Technology Stack
 
@@ -18,3 +18,7 @@ Use a RaspberryPi as a web server and pushing data to clients on the same networ
 
 ### Helpful Tutorials
 
+- https://www.scaleway.com/en/docs/how-to-install-and-configure-socket-io/
+
+- Video
+    - https://www.youtube.com/watch?v=Qqx_wzMmFeA&t
