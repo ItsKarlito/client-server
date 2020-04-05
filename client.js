@@ -1,10 +1,12 @@
 const socket = io.connect('http://192.168.2.207:3000');
 box =  document.getElementById('box');
 
+const clientGreeting = '*** connected to client ***';
+
 // The socket.on('connect') is an event which is fired upon a successful connection from the web browser
 // We then have a function callback that will send to the server the hello world message.
 socket.on('connect', function (data) {
-    socket.emit('join', 'hello from client');
+    socket.emit('join', clientGreeting);
 });
 
 socket.on('broad', function (data) {
