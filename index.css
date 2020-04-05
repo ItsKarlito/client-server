@@ -1,0 +1,12 @@
+h1 {
+    color: blue;
+}
+
+#box {
+    width: 500px;
+    height: 500px;
+    overflow-y: auto;
+    border: 2px solid green;
+    font-family: monospace;
+    padding: 10px;
+}
