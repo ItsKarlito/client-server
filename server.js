@@ -5,7 +5,7 @@ const io = require('socket.io')(server);
 
 let boxCount = 0;
 const boxMaxItemCount = 1000;
-const serverGreeting = '*** connected to server ***';
+const serverGreeting = 'connected to server...';
 
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/node_modules'));
