@@ -19,7 +19,7 @@ Use a RaspberryPi as a web server and push data in real time to clients on the s
         - Nodemon (utility that monitors any changes in source code and automatically restarts your server)
         
         
-            ![](images/js_standard_code_style_badge.svg)
+            [![js-standard-style](images/js_standard_code_style_badge.svg)](http://standardjs.com)
         
 ### Helpful Tutorials
 
