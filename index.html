@@ -7,15 +7,15 @@
     <link rel="stylesheet" href="index.css">
 </head>
 
-<body>
+<body onkeypress="simulateSensorSignal()">
     <h1>Client</h1>
     
     <div id="box"></div>
 
-    <form id="form">
+    <!-- <form id="form">
         <input id="chat_input" type="text">
         <input type="submit" value="Send">
-    </form>
+    </form> -->
 
     <script src="/jquery/dist/jquery.js"></script>
     <script src="/socket.io/socket.io.js"></script>

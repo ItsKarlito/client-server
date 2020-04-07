@@ -7,6 +7,9 @@ let boxCount = 0;
 const boxMaxItemCount = 1000;
 const serverGreeting = 'connected to server...';
 
+let sigCount = 0;
+
+// serve static files
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/node_modules'));
 app.get('/', function (req, res, next) {
@@ -17,6 +20,7 @@ app.get('/', function (req, res, next) {
 // The 'client.on('join') will wait for a message from the client for join. It will then log it to the console.
 io.on('connection', function (client) {
     client.on('join', function (data) {
+        // log client greeting
         console.log(data);
 
         function pushToClients(data)
@@ -33,8 +37,13 @@ io.on('connection', function (client) {
 
         // greet the new client
         client.emit('broad', serverGreeting);
+
+        client.on('add', function () {
+            sigCount++;
+            pushToClients(sigCount);
+        });
         
-        //broadcast client messages to other clients
+        // broadcast client messages to other clients
         client.on('messages', function (data) {
             if (data != '')
             {
@@ -45,3 +54,4 @@ io.on('connection', function (client) {
 });
 
 server.listen(3000);
+console.log('http://192.168.2.207:3000');
