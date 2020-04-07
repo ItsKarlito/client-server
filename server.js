@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
+var path = require('path')
 
 let boxCount = 0
 const boxMaxItemCount = 1000
@@ -11,9 +12,9 @@ let sigCount = 0
 
 // serve static files
 app.use(express.static(__dirname))
-app.use(express.static(__dirname + '/node_modules'))
+app.use(express.static(path.join(__dirname, '/node_modules')))
 app.get('/', function (req, res, next) {
-  res.sendFile(__dirname + '/index.html')
+  res.sendFile(path.join(__dirname, '/index.html'))
 })
 
 // The io.on is listening for connections. When it receives one it will report to the console client connected....
@@ -44,7 +45,7 @@ io.on('connection', function (client) {
 
     // broadcast client messages to other clients
     client.on('messages', function (data) {
-      if (data != '') {
+      if (data !== '') {
         pushToClients(data)
       }
     })
