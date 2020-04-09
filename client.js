@@ -1,4 +1,4 @@
-const socket = io.connect('http://192.168.2.207:3000')
+const socket = io.connect('http://192.168.2.219:3000')
 box = document.getElementById('box')
 
 const clientGreeting = 'connected to client...'
