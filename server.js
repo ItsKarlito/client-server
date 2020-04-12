@@ -5,7 +5,19 @@ const io = require('socket.io')(server)
 const path = require('path')
 const fs = require('fs')
 
+let signalCount = 0
+const signalCountFile = 'bottle_count.csv'
 const databaseFile = 'database.csv'
+
+fs.access(signalCountFile, (err) => {
+  if (err) {
+    fs.appendFile(signalCountFile, signalCount, function (err) {
+      if (err) throw err
+    })
+  } else {
+    signalCount = fs.readFileSync(signalCountFile)
+  }
+})
 
 const bracketSize = 6
 const bracket = []
@@ -22,12 +34,16 @@ app.get('/', function (req, res, next) {
 })
 
 function writeToDatabase (data) {
-  if (!data.includes(serverGreeting)) {
-    fs.appendFile(databaseFile, data + '\n', function (err) {
-      if (err) throw err
-      console.log('added entry to database')
-    })
-  }
+  fs.appendFile(databaseFile, data + '\n', function (err) {
+    if (err) throw err
+  })
+}
+
+function incrementSignalCount () {
+  signalCount++
+  fs.writeFile(signalCountFile, signalCount, function (err) {
+    if (err) throw err
+  })
 }
 
 function updateBracket (data) {
@@ -35,8 +51,6 @@ function updateBracket (data) {
     bracket.shift()
   }
   bracket.push(data)
-  // for (let i = 0; i < bracket.length; i++)
-  //   console.log(bracket[i]);
 }
 
 function delta () {
@@ -67,7 +81,7 @@ io.on('connection', function (client) {
     function pushToClients (data) {
       if (boxCount >= boxMaxItemCount) {
         boxCount = 0
-        client.emit('clearBox', 'box cleared')
+        client.emit('clearBox')
       }
       client.emit('broad', data)
       client.broadcast.emit('broad', data)
@@ -79,14 +93,14 @@ io.on('connection', function (client) {
     client.emit('broad', serverGreeting)
 
     client.on('signal', function (data) {
+      incrementSignalCount()
       const timeStamp = new Date(data)
       updateBracket(data)
-      console.log(average())
-      writeToDatabase(String('bottle' + ',' + Math.round(average()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()))
-      pushToClients('[ bottle ]' + '[ ' + Math.round(average()) + ' ]' + formatDateTime(data))
+      writeToDatabase(String(signalCount + ',' + Math.round(average()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
+      pushToClients('[ ' + signalCount + ' ]' + '[ ' + Math.round(average()) + ' ]' + formatDateTime(data))
     })
   })
 })
 
 server.listen(3000)
-console.log('http://192.168.2.219:3000')
+console.log('http://192.168.2.207:3000')

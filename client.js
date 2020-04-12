@@ -1,11 +1,11 @@
-const socket = io.connect('http://192.168.2.219:3000')
+const socket = io.connect('http://192.168.2.207:3000')
 box = document.getElementById('box')
 
 const clientGreeting = 'connected to client...'
 
 // The socket.on('connect') is an event which is fired upon a successful connection from the web browser
 // We then have a function callback that will send to the server the hello world message.
-socket.on('connect', function (data) {
+socket.on('connect', function () {
   socket.emit('join', clientGreeting)
 })
 
@@ -16,9 +16,8 @@ socket.on('broad', function (data) {
   box.scrollTop = box.scrollHeight
 })
 
-socket.on('clearBox', function (data) {
+socket.on('clearBox', function () {
   box.innerHTML = ''
-  console.log('box cleared')
 })
 
 // receive any keypress event from client and send to server
