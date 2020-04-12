@@ -5,6 +5,9 @@ const io = require('socket.io')(server)
 const path = require('path')
 const fs = require('fs')
 
+const Gpio = require('onoff').Gpio
+const button = new Gpio(17, 'in', 'falling', { debounceTimeout: 50 })
+
 let signalCount = 0
 const signalCountFile = 'bottle_count.csv'
 const databaseFile = 'database.csv'
@@ -19,6 +22,7 @@ fs.access(signalCountFile, (err) => {
   }
 })
 
+const perUnitTime = 60000
 const bracketSize = 6
 const bracket = []
 
@@ -26,7 +30,6 @@ let boxCount = 0
 const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
-// serve static files
 app.use(express.static(__dirname))
 app.use(express.static(path.join(__dirname, '/node_modules')))
 app.get('/', function (req, res, next) {
@@ -61,7 +64,7 @@ function delta () {
 }
 
 function average () {
-  return ((bracketSize - 1) * 60000 / delta())
+  return ((bracketSize - 1) * perUnitTime / delta())
 }
 
 function formatDateTime (data) {
@@ -71,36 +74,30 @@ function formatDateTime (data) {
   return String('[ ' + formatedTime + ' - ' + formatedDate + ' ]')
 }
 
-// The io.on is listening for connections. When it receives one it will report to the console client connected....
-// The 'client.on('join') will wait for a message from the client for join. It will then log it to the console.
+function pushToClients (data) {
+  if (boxCount >= boxMaxItemCount) {
+    boxCount = 0
+    io.emit('clearBox')
+  }
+  io.emit('broad', data)
+  boxCount++
+}
+
 io.on('connection', function (client) {
-  client.on('join', function (data) {
-    // log client greeting
-    console.log(data)
+  client.emit('broad', serverGreeting)
+})
 
-    function pushToClients (data) {
-      if (boxCount >= boxMaxItemCount) {
-        boxCount = 0
-        client.emit('clearBox')
-      }
-      client.emit('broad', data)
-      client.broadcast.emit('broad', data)
-      boxCount++
-      console.log('Broadcasting: ' + data)
-    }
+button.watch((err) => {
+  if (err) throw err
+  incrementSignalCount()
+  const timeStamp = new Date()
+  updateBracket(timeStamp)
+  writeToDatabase(String(signalCount + ',' + Math.round(average()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
+  pushToClients('[ ' + signalCount + ' ]' + '[ ' + Math.round(average()) + ' ]' + formatDateTime(timeStamp))
+})
 
-    // greet the new client
-    client.emit('broad', serverGreeting)
-
-    client.on('signal', function (data) {
-      incrementSignalCount()
-      const timeStamp = new Date(data)
-      updateBracket(data)
-      writeToDatabase(String(signalCount + ',' + Math.round(average()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
-      pushToClients('[ ' + signalCount + ' ]' + '[ ' + Math.round(average()) + ' ]' + formatDateTime(data))
-    })
-  })
+process.on('SIGINT', _ => {
+  button.unexport()
 })
 
 server.listen(3000)
-console.log('http://192.168.2.207:3000')

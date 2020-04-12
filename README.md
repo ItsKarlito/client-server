@@ -14,7 +14,7 @@ Use a RaspberryPi as a web server and push data in real time to clients on the s
     - **Node.js**
         - ExpressJS (web application framework for Node.js)
         - Socket.io (enables realtime, bi-directional communication between web clients and servers)
-        - JQuerry (library designed to simplify HTML DOM tree traversal and manipulation)
+        - OnOff (GPIO access and interrupt detection with Node.js on Linux boards like the Raspberry Pi or BeagleBone)       
         - StandardJS (service to lint and format JavaScript code using JavaScript Standard Style)
         - Nodemon (utility that monitors any changes in source code and automatically restarts your server)
         
