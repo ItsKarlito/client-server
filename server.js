@@ -7,8 +7,8 @@ const fs = require('fs')
 
 const databaseFile = 'database.csv'
 
-let bracket = new Array
 const bracketSize = 6
+const bracket = []
 
 let boxCount = 0
 const boxMaxItemCount = 1000
@@ -21,18 +21,17 @@ app.get('/', function (req, res, next) {
   res.sendFile(path.join(__dirname, '/index.html'))
 })
 
-function writeToDatabase(data) {
+function writeToDatabase (data) {
   if (!data.includes(serverGreeting)) {
     fs.appendFile(databaseFile, data + '\n', function (err) {
-      if (err) throw err;
+      if (err) throw err
       console.log('added entry to database')
     })
   }
 }
 
-function updateBracket(data){
-  if (bracket.length >= bracketSize)
-  {
+function updateBracket (data) {
+  if (bracket.length >= bracketSize) {
     bracket.shift()
   }
   bracket.push(data)
@@ -40,22 +39,22 @@ function updateBracket(data){
   //   console.log(bracket[i]);
 }
 
-function delta(){
+function delta () {
   const timeStamp1 = new Date(bracket[0])
-  const timeStamp2 = new Date(bracket[bracketSize-1])
+  const timeStamp2 = new Date(bracket[bracketSize - 1])
   const time = (timeStamp2 - timeStamp1)
   return time
 }
 
-function average(){
-  return ((bracketSize-1)*60000/delta())
+function average () {
+  return ((bracketSize - 1) * 60000 / delta())
 }
 
-function formatDateTime(data) {
+function formatDateTime (data) {
   const dateTime = new Date(data)
   const formatedDate = `${dateTime.getDate()}/${dateTime.getMonth() + 1}/${dateTime.getFullYear()}`
   const formatedTime = dateTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false })
-  return new String('[ ' + formatedTime + ' - ' + formatedDate + ' ]')
+  return String('[ ' + formatedTime + ' - ' + formatedDate + ' ]')
 }
 
 // The io.on is listening for connections. When it receives one it will report to the console client connected....
@@ -65,7 +64,7 @@ io.on('connection', function (client) {
     // log client greeting
     console.log(data)
 
-    function pushToClients(data) {
+    function pushToClients (data) {
       if (boxCount >= boxMaxItemCount) {
         boxCount = 0
         client.emit('clearBox', 'box cleared')
@@ -83,7 +82,7 @@ io.on('connection', function (client) {
       const timeStamp = new Date(data)
       updateBracket(data)
       console.log(average())
-      writeToDatabase(new String('bottle' + ',' + Math.round(average()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + new Number(timeStamp.getMonth()+1) + ',' + timeStamp.getFullYear()));
+      writeToDatabase(String('bottle' + ',' + Math.round(average()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()))
       pushToClients('[ bottle ]' + '[ ' + Math.round(average()) + ' ]' + formatDateTime(data))
     })
   })
