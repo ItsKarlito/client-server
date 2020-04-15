@@ -22,6 +22,14 @@ fs.access(signalCountFile, (err) => {
   }
 })
 
+fs.access(databaseFile, (err) => {
+  if (err) {
+    fs.appendFile(databaseFile, '', function (err) {
+      if (err) throw err
+    })
+  }
+})
+
 const perUnitTime = 60000
 const bracketSize = 6
 const bracket = []
@@ -31,6 +39,7 @@ const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
 app.use(express.static(__dirname))
+app.use(express.static(path.join(__dirname, '/database.csv')))
 app.use(express.static(path.join(__dirname, '/node_modules')))
 app.get('/', function (req, res, next) {
   res.sendFile(path.join(__dirname, '/index.html'))
