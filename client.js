@@ -15,3 +15,11 @@ socket.on('broad', function (data) {
 socket.on('clearBox', function () {
   box.innerHTML = ''
 })
+
+function start() {
+  socket.emit('start')
+}
+
+function stop() {
+  socket.emit('stop')
+}

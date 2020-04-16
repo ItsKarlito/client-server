@@ -9,10 +9,15 @@
 
 <body>
     <h1>Client</h1>
-    <div id="box"></div>
     <a href="http://192.168.2.219:3000/database.csv" download="database.csv">
         <input type="button" value="Download" />
     </a>
+    <br></br>
+    <button onclick="start()">Start</button>
+    <br></br>
+    <button onclick="stop()">Stop</button>
+    <br></br>
+    <div id="box"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>
