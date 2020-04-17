@@ -3,10 +3,10 @@
     <note priority="high" time="1586930194" done="1587004593">
         start/stop button
     </note>
-    <note priority="medium" time="1586930026">
+    <note priority="medium" time="1586930026" done="1587105244">
         start/end timestamp
     </note>
-    <note priority="medium" time="1586930059">
+    <note priority="medium" time="1586930059" done="1587105286">
         total unit count
     </note>
     <note priority="medium" time="1586930074">
