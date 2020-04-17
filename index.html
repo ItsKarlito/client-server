@@ -9,15 +9,39 @@
 
 <body>
     <h1>Client</h1>
+    <form>
+
+        <label for="product">Product: </label>
+        <input type="text" id="product" value=""><br>
+
+        <label for="line">Filling Line: </label>
+        <input type="text" id="line" value=""><br>
+
+        <label for="start">Start Time: </label>
+        <input type="text" id="start" value=""><br>
+
+        <label for="end">End Time: </label>
+        <input type="text" id="end" value=""><br>
+
+        <label for="count">Total Unit Count: </label>
+        <input type="text" id="count" value=""><br>
+
+        <label for="totalTime">Total Time: </label>
+        <input type="text" id="totalTime" value=""><br>
+
+        <label for="average">Total Average: </label>
+        <input type="text" id="average" value=""><br>
+
+        <label for="bracketSizeRunningAverage">Running Average Period: </label>
+        <input type="text" id="bracketSizeRunningAverage" value="" ><br>
+
+    </form><br><br>
+    <div id="box"></div><br>
+    <button class="button button1" onclick="start()">Start</button>
+    <button class="button button2" onclick="stop()">Stop</button>
     <a href="http://192.168.2.219:3000/database.csv" download="database.csv">
-        <input type="button" value="Download" />
-    </a>
-    <br></br>
-    <button onclick="start()">Start</button>
-    <br></br>
-    <button onclick="stop()">Stop</button>
-    <br></br>
-    <div id="box"></div>
+        <input class="button button3" type="button" value="Download" />
+    </a><br><br>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>

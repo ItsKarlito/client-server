@@ -6,7 +6,65 @@ h1 {
     width: 500px;
     height: 500px;
     overflow-y: auto;
-    border: 2px solid green;
+    border: 2px solid black;
     font-family: monospace;
     padding: 10px;
 }
+
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0s;
+    cursor: pointer;
+    width: 172px;
+}
+  
+.button1 {
+    background-color: white; 
+    color: green; 
+    border: 2px solid green;
+}
+  
+.button1:hover {
+    background-color: green;
+    color: white;
+}
+
+.button2 {
+    background-color: white; 
+    color: red; 
+    border: 2px solid red;
+}
+  
+.button2:hover {
+    background-color: red;
+    color: white;
+}
+
+.button3 {
+    background-color: white; 
+    color: blue; 
+    border: 2px solid blue;
+}
+  
+.button3:hover {
+    background-color: blue;
+    color: white;
+}
+
+#download {
+    background-color: wheat;
+}
+
+label {
+    width: 250px;
+    font-size: 24px;
+    display: inline-block;
+}
+
