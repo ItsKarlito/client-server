@@ -44,7 +44,7 @@ fs.access(infoFile, (err) => {
       if (err) throw err
     })
   } else {
-    info = JSON.parse(fs.readFile(infoFile))
+    info = JSON.parse(fs.readFileSync(infoFile))
   }
 })
 
