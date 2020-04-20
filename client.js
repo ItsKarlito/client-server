@@ -17,21 +17,20 @@ function formatTimestamp (timeStamp) {
   return String(formatedTime + ' - ' + formatedDate)
 }
 
-function formatTotalTime(ms) {
-  var delta = Math.abs(ms) / 1000;
-  var days = Math.floor(delta / 86400);
-  delta -= days * 86400;
-  var hours = Math.floor(delta / 3600) % 24;
-  delta -= hours * 3600;
+function formatTotalTime (ms) {
+  var delta = Math.abs(ms) / 1000
+  var days = Math.floor(delta / 86400)
+  delta -= days * 86400
+  var hours = Math.floor(delta / 3600) % 24
+  delta -= hours * 3600
   if (hours < 10) hours = '0' + hours
-  var minutes = Math.floor(delta / 60) % 60;
-  delta -= minutes * 60;
+  var minutes = Math.floor(delta / 60) % 60
+  delta -= minutes * 60
   if (minutes < 10) minutes = '0' + minutes
-  var seconds = Math.floor(delta) % 60;
+  var seconds = Math.floor(delta) % 60
   if (seconds < 10) seconds = '0' + seconds
   return hours + ':' + minutes + ':' + seconds
 }
-
 
 socket.on('connect', function () {
   socket.emit('join')
@@ -58,4 +57,3 @@ socket.on('updateInfo', function (data) {
   if (data.averageUnitPerUnitTime !== '') document.getElementById('average').value = data.averageUnitPerUnitTime
   if (data.bracketSizeRunningAverage !== '') document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage
 })
-
