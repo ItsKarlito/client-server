@@ -11,12 +11,27 @@ function stop () {
 }
 
 function formatTimestamp (timeStamp) {
-  if (timeStamp === '') return timeStamp
   const dateTime = new Date(timeStamp)
   const formatedDate = `${dateTime.getDate()}/${dateTime.getMonth() + 1}/${dateTime.getFullYear()}`
   const formatedTime = dateTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false })
   return String(formatedTime + ' - ' + formatedDate)
 }
+
+function formatTotalTime(ms) {
+  var delta = Math.abs(ms) / 1000;
+  var days = Math.floor(delta / 86400);
+  delta -= days * 86400;
+  var hours = Math.floor(delta / 3600) % 24;
+  delta -= hours * 3600;
+  if (hours < 10) hours = '0' + hours
+  var minutes = Math.floor(delta / 60) % 60;
+  delta -= minutes * 60;
+  if (minutes < 10) minutes = '0' + minutes
+  var seconds = Math.floor(delta) % 60;
+  if (seconds < 10) seconds = '0' + seconds
+  return hours + ':' + minutes + ':' + seconds
+}
+
 
 socket.on('connect', function () {
   socket.emit('join')
@@ -33,13 +48,14 @@ socket.on('clearBox', function () {
   box.innerHTML = ''
 })
 
-socket.on('updateDatabaseHeader', function (data) {
-  document.getElementById('line').value = data.fillingLine
-  document.getElementById('product').value = data.product
-  document.getElementById('start').value = formatTimestamp(data.startTimestamp)
-  document.getElementById('end').value = formatTimestamp(data.endTimestamp)
-  document.getElementById('count').value = data.count
-  document.getElementById('totalTime').value = data.timeElapsed
-  document.getElementById('average').value = data.averageUnitPerUnitTime
-  document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage
+socket.on('updateInfo', function (data) {
+  if (data.fillingLine !== '') document.getElementById('line').value = data.fillingLine
+  if (data.product !== '') document.getElementById('product').value = data.product
+  if (data.startTimestamp !== '') document.getElementById('start').value = formatTimestamp(data.startTimestamp)
+  if (data.endTimestamp !== '') document.getElementById('end').value = formatTimestamp(data.endTimestamp)
+  if (data.count !== '') document.getElementById('count').value = data.count
+  if (data.totalTime !== '') document.getElementById('totalTime').value = formatTotalTime(data.totalTime)
+  if (data.averageUnitPerUnitTime !== '') document.getElementById('average').value = data.averageUnitPerUnitTime
+  if (data.bracketSizeRunningAverage !== '') document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage
 })
+

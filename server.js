@@ -10,7 +10,7 @@ const button = new Gpio(17, 'in', 'falling', { debounceTimeout: 50 })
 
 let isRecording = false
 
-const signalCountFile = 'bottle_count.csv'
+const infoFile = 'info.json'
 const databaseFile = 'database.csv'
 
 const perUnitTime = 60000
@@ -20,13 +20,13 @@ let boxCount = 0
 const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
-const databaseHeader = {
+let info = {
   fillingLine: '',
   product: '',
   startTimestamp: '',
   endTimestamp: '',
   count: '',
-  timeElapsed: '',
+  totalTime: '',
   averageUnitPerUnitTime: '',
   bracketSizeRunningAverage: 5
 }
@@ -38,13 +38,13 @@ app.get('/', function (req, res, next) {
   res.sendFile(path.join(__dirname, '/index.html'))
 })
 
-fs.access(signalCountFile, (err) => {
+fs.access(infoFile, (err) => {
   if (err) {
-    fs.appendFile(signalCountFile, databaseHeader.count, function (err) {
+    fs.appendFile(infoFile, JSON.stringify(info) + '\n', function (err) {
       if (err) throw err
     })
   } else {
-    databaseHeader.count = fs.readFileSync(signalCountFile)
+    info = JSON.parse(fs.readFile(infoFile))
   }
 })
 
@@ -56,8 +56,11 @@ fs.access(databaseFile, (err) => {
   }
 })
 
-function updateDatabaseHeader () {
-  io.emit('updateDatabaseHeader', databaseHeader)
+function updateInfo () {
+  io.emit('updateInfo', info)
+  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
+    if (err) throw err
+  })
 }
 
 function writeToDatabase (data) {
@@ -66,15 +69,8 @@ function writeToDatabase (data) {
   })
 }
 
-function incrementSignalCount () {
-  databaseHeader.count++
-  fs.writeFile(signalCountFile, databaseHeader.count, function (err) {
-    if (err) throw err
-  })
-}
-
 function updateBracket (timeStamp) {
-  if (bracket.length >= databaseHeader.bracketSizeRunningAverage + 1) {
+  if (bracket.length >= info.bracketSizeRunningAverage + 1) {
     bracket.shift()
   }
   bracket.push(timeStamp)
@@ -85,7 +81,7 @@ function deltaTimestamp (initial, final) {
 }
 
 function runningAverage () {
-  return (databaseHeader.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[databaseHeader.bracketSizeRunningAverage]))
+  return (info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
 }
 
 function formatTimestamp (timeStamp) {
@@ -106,16 +102,16 @@ function pushToClients (data) {
 
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
-  updateDatabaseHeader()
+  updateInfo()
   client.on('start', function () {
     isRecording = true
-    databaseHeader.startTimestamp = new Date()
-    updateDatabaseHeader()
   })
   client.on('stop', function () {
     isRecording = false
-    databaseHeader.endTimestamp = new Date()
-    updateDatabaseHeader()
+    info.endTimestamp = new Date()
+    info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
+    info.averageUnitPerUnitTime = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
+    updateInfo()
   })
 })
 
@@ -123,11 +119,14 @@ button.watch((err) => {
   if (err) throw err
   if (isRecording) {
     const timeStamp = new Date()
-    incrementSignalCount()
-    updateDatabaseHeader()
+    info.count++
+    if (info.count === 1) {
+      info.startTimestamp = new Date()
+    }
+    updateInfo()
     updateBracket(timeStamp)
-    writeToDatabase(String(databaseHeader.count + ',' + Math.round(runningAverage()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
-    pushToClients('[ ' + databaseHeader.count + ' ]' + '[ ' + Math.round(runningAverage()) + ' ]' + formatTimestamp(timeStamp))
+    writeToDatabase(String(info.count + ',' + Math.round(runningAverage()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
+    pushToClients('[ ' + info.count + ' ]' + '[ ' + Math.round(runningAverage()) + ' ]' + formatTimestamp(timeStamp))
   }
 })
 
