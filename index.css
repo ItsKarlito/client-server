@@ -3,7 +3,7 @@ h1 {
 }
 
 #box {
-    width: 500px;
+    width: 600px;
     height: 500px;
     overflow-y: auto;
     border: 2px solid black;
@@ -22,7 +22,7 @@ h1 {
     font-size: 16px;
     transition-duration: 0s;
     cursor: pointer;
-    width: 172px;
+    width: 205px;
 }
   
 .button1 {
@@ -63,8 +63,13 @@ h1 {
 }
 
 label {
-    width: 250px;
-    font-size: 24px;
+    width: 175px;
+    font-size: 16px;
     display: inline-block;
 }
 
+#product {
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 442px;
+}

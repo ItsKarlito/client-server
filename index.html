@@ -24,24 +24,23 @@
         <input type="text" id="end" placeholder="end time"><br>
 
         <label for="count">Total Unit Count: </label>
-        <input type="text" id="count" placeholder="0"> bottles<br>
+        <input type="text" id="count" placeholder="0"><br>
 
         <label for="totalTime">Total Time: </label>
-        <input type="text" id="totalTime" placeholder="00:00:00"> hh:mm:ss<br>
+        <input type="text" id="totalTime" placeholder="00:00:00"><br>
 
-        <label for="average">Total Average: </label>
-        <input type="text" id="average" placeholder="0"> bottles / minute<br>
+        <label for="average">Total Average (btl/min):</label>
+        <input type="text" id="average" placeholder="0"><br>
 
         <label for="bracketSizeRunningAverage">Running Average Period: </label>
-        <input type="text" id="bracketSizeRunningAverage" placehoder="0" > most recent bottles<br>
-
-    </form><br><br>
-    <div id="box"></div><br>
+        <input type="text" id="bracketSizeRunningAverage" placehoder="0" ><br>
+    </form><br>
     <button class="button button1" onclick="start()">Start</button>
     <button class="button button2" onclick="stop()">Stop</button>
     <a href="http://192.168.2.219:3000/database.csv" download="database.csv">
         <input class="button button3" type="button" value="Download" />
     </a><br><br>
+    <div id="box"></div><br>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>
