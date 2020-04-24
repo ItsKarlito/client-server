@@ -130,8 +130,8 @@ button.watch((err) => {
     if (info.count === 1) {
       info.startTimestamp = new Date()
     }
-    info.runningAverage = runningAverage()
     updateBracket(timeStamp)
+    info.runningAverage = runningAverage()
     writeToDatabase(String(info.count + ',' + info.runningAverage + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
     pushToClients('[ ' + info.count + ' ]' + '[ ' + info.runningAverage + ' ]' + formatTimestamp(timeStamp))
   }
