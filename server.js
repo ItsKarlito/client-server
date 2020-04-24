@@ -62,6 +62,7 @@ function updateInfo () {
     if (err) throw err
   })
 }
+setInterval(updateInfo, 1000);
 
 function writeToDatabase (data) {
   fs.appendFile(databaseFile, data + '\n', function (err) {
