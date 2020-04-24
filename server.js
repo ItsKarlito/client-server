@@ -115,6 +115,7 @@ io.on('connection', function (client) {
     info.isRecording = true
   })
   client.on('stop', function () {
+    if (!info.isRecording) return
     info.isRecording = false
     info.endTimestamp = new Date()
     info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
