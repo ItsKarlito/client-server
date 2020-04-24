@@ -82,7 +82,7 @@ function average () {
 }
 
 function updateInfo () {
-  if (!isRecording && info.startTimestamp === '') {
+  if (isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
     info.averageUnitPerUnitTime = Math.round(average())
   }
