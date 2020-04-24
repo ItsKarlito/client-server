@@ -48,7 +48,7 @@ socket.on('clearBox', function () {
 })
 
 socket.on('updateInfo', function (data) {
-  if (data.isRecording !== '') document.getElementById('status').style.background = data.isRecording ? 'green' : 'red'
+  if (data.isRecording !== '') document.getElementById('dot').style.background = data.isRecording ? 'green' : 'red'
   if (data.fillingLine !== '') document.getElementById('line').value = data.fillingLine
   if (data.product !== '') document.getElementById('product').value = data.product
   if (data.startTimestamp !== '') document.getElementById('start').value = formatTimestamp(data.startTimestamp)
