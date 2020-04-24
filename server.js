@@ -26,7 +26,8 @@ let info = {
   endTimestamp: '',
   count: '',
   totalTime: '',
-  averageUnitPerUnitTime: '',
+  average: '',
+  runningAverage: '',
   bracketSizeRunningAverage: 5
 }
 
@@ -73,17 +74,17 @@ function deltaTimestamp (initial, final) {
 }
 
 function runningAverage () {
-  return (info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
+  return Math.round(info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
 }
 
 function average () {
-  return (info.count * perUnitTime / deltaTimestamp(info.startTimestamp, new Date()))
+  return Math.round(info.count * perUnitTime / deltaTimestamp(info.startTimestamp, new Date()))
 }
 
 function updateInfo () {
   if (info.isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
-    info.averageUnitPerUnitTime = Math.round(average())
+    info.average = average()
   }
   io.emit('updateInfo', info)
   fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
@@ -117,7 +118,7 @@ io.on('connection', function (client) {
     info.isRecording = false
     info.endTimestamp = new Date()
     info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
-    info.averageUnitPerUnitTime = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
+    info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
   })
 })
 
@@ -129,9 +130,10 @@ button.watch((err) => {
     if (info.count === 1) {
       info.startTimestamp = new Date()
     }
+    info.runningAverage = runningAverage()
     updateBracket(timeStamp)
-    writeToDatabase(String(info.count + ',' + Math.round(runningAverage()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
-    pushToClients('[ ' + info.count + ' ]' + '[ ' + Math.round(runningAverage()) + ' ]' + formatTimestamp(timeStamp))
+    writeToDatabase(String(info.count + ',' + info.runningAverage + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
+    pushToClients('[ ' + info.count + ' ]' + '[ ' + info.runningAverage + ' ]' + formatTimestamp(timeStamp))
   }
 })
 

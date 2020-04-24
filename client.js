@@ -55,6 +55,7 @@ socket.on('updateInfo', function (data) {
   if (data.endTimestamp !== '') document.getElementById('end').value = formatTimestamp(data.endTimestamp)
   if (data.count !== '') document.getElementById('count').value = data.count
   if (data.totalTime !== '') document.getElementById('totalTime').value = formatTotalTime(data.totalTime)
-  if (data.averageUnitPerUnitTime !== '') document.getElementById('average').value = data.averageUnitPerUnitTime
+  if (data.average !== '') document.getElementById('average').value = data.average
+  if (data.runningAverage !== '') document.getElementById('runningAverage').value = data.runningAverage
   if (data.bracketSizeRunningAverage !== '') document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage
 })

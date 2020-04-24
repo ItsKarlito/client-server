@@ -9,32 +9,35 @@
 
 <body>
     <h1>Client</h1>
-    <label class="status" for="dot">Status: </label>
+    <label class="status" for="dot">Status:</label>
     <span id="dot"></span><br><br>
     <form>
 
-        <label for="product">Product: </label>
+        <label for="product">Product:</label>
         <input type="text" id="product" placeholder="product name"><br>
 
-        <label for="line">Filling Line: </label>
+        <label for="line">Filling Line:</label>
         <input type="text" id="line" placeholder="filling line"><br>
 
-        <label for="start">Start Time: </label>
+        <label for="start">Start Time:</label>
         <input type="text" id="start" placeholder="start time"><br>
 
-        <label for="end">End Time: </label>
+        <label for="end">End Time:</label>
         <input type="text" id="end" placeholder="end time"><br>
 
-        <label for="count">Total Unit Count: </label>
+        <label for="count">Total Unit Count:</label>
         <input type="text" id="count" placeholder="0"><br>
 
-        <label for="totalTime">Total Time: </label>
+        <label for="totalTime">Total Time:</label>
         <input type="text" id="totalTime" placeholder="00:00:00"><br>
 
         <label for="average">Total Average (btl/min):</label>
         <input type="text" id="average" placeholder="0"><br>
 
-        <label for="bracketSizeRunningAverage">Running Average Period: </label>
+        <label for="runningAverage">Running Average (btl/min):</label>
+        <input type="text" id="runningAverage" placeholder="0"><br>
+
+        <label for="bracketSizeRunningAverage">Running Average Period:</label>
         <input type="text" id="bracketSizeRunningAverage" placehoder="0" ><br>
     </form><br>
     <button class="button button1" onclick="start()">Start</button>
