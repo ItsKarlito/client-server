@@ -82,9 +82,10 @@ function average () {
 }
 
 function updateInfo () {
-  if (!isRecording && info.startTimestamp === '') return
-  info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
-  info.averageUnitPerUnitTime = Math.round(average())
+  if (!isRecording && info.startTimestamp === '') {
+    info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
+    info.averageUnitPerUnitTime = Math.round(average())
+  }
   io.emit('updateInfo', info)
   fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
     if (err) throw err
