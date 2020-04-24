@@ -73,3 +73,10 @@ label {
     text-transform: uppercase;
     width: 442px;
 }
+#dot {
+    height: 25px;
+    width: 25px;
+    background-color: gray;
+    vertical-align: middle;
+    display: inline-block;
+  }
