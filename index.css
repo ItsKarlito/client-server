@@ -78,5 +78,6 @@ label {
     width: 25px;
     background-color: gray;
     vertical-align: middle;
+    border-radius: 50%;
     display: inline-block;
   }
