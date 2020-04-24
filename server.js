@@ -81,7 +81,7 @@ function average () {
 }
 
 function updateInfo () {
-  if (isRecording && info.startTimestamp !== '') {
+  if (info.isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
     info.averageUnitPerUnitTime = Math.round(average())
   }
@@ -111,10 +111,10 @@ function pushToClients (data) {
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
   client.on('start', function () {
-    info.info.isRecording = true
+    info.isRecording = true
   })
   client.on('stop', function () {
-    info.info.isRecording = false
+    info.isRecording = false
     info.endTimestamp = new Date()
     info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
     info.averageUnitPerUnitTime = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
@@ -123,7 +123,7 @@ io.on('connection', function (client) {
 
 button.watch((err) => {
   if (err) throw err
-  if (info.info.isRecording) {
+  if (info.isRecording) {
     const timeStamp = new Date()
     info.count++
     if (info.count === 1) {
