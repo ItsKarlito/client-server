@@ -55,13 +55,6 @@ fs.access(databaseFile, (err) => {
   }
 })
 
-function updateInfo () {
-  io.emit('updateInfo', info)
-  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
-    if (err) throw err
-  })
-}
-
 function writeToDatabase (data) {
   fs.appendFile(databaseFile, data + '\n', function (err) {
     if (err) throw err
@@ -83,6 +76,22 @@ function runningAverage () {
   return (info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
 }
 
+function average () {
+  return (info.count * perUnitTime / deltaTimestamp(info.startTimestamp, new Date()))
+}
+
+function updateInfo () {
+  if (isRecording && info.startTimestamp !== '') {
+    info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
+    info.averageUnitPerUnitTime = Math.round(average())
+  }
+  io.emit('updateInfo', info)
+  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
+    if (err) throw err
+  })
+}
+setInterval(updateInfo, 100)
+
 function formatTimestamp (timeStamp) {
   const dateTime = new Date(timeStamp)
   const formatedDate = `${dateTime.getDate()}/${dateTime.getMonth() + 1}/${dateTime.getFullYear()}`
@@ -101,7 +110,6 @@ function pushToClients (data) {
 
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
-  updateInfo()
   client.on('start', function () {
     info.isRecording = true
   })
@@ -110,7 +118,6 @@ io.on('connection', function (client) {
     info.endTimestamp = new Date()
     info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
     info.averageUnitPerUnitTime = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
-    updateInfo()
   })
 })
 
@@ -122,7 +129,6 @@ button.watch((err) => {
     if (info.count === 1) {
       info.startTimestamp = new Date()
     }
-    updateInfo()
     updateBracket(timeStamp)
     writeToDatabase(String(info.count + ',' + Math.round(runningAverage()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
     pushToClients('[ ' + info.count + ' ]' + '[ ' + Math.round(runningAverage()) + ' ]' + formatTimestamp(timeStamp))
