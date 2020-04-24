@@ -56,14 +56,6 @@ fs.access(databaseFile, (err) => {
   }
 })
 
-function updateInfo () {
-  io.emit('updateInfo', info)
-  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
-    if (err) throw err
-  })
-}
-setInterval(updateInfo, 1000);
-
 function writeToDatabase (data) {
   fs.appendFile(databaseFile, data + '\n', function (err) {
     if (err) throw err
@@ -84,6 +76,20 @@ function deltaTimestamp (initial, final) {
 function runningAverage () {
   return (info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
 }
+
+function average () {
+  return (info.count * perUnitTime / deltaTimestamp(info.startTimestamp, new Date()))
+}
+
+function updateInfo () {
+  info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
+  info.averageUnitPerUnitTime = average()
+  io.emit('updateInfo', info)
+  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
+    if (err) throw err
+  })
+}
+setInterval(updateInfo, 1000)
 
 function formatTimestamp (timeStamp) {
   const dateTime = new Date(timeStamp)
