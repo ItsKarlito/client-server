@@ -8,8 +8,6 @@ const fs = require('fs')
 const Gpio = require('onoff').Gpio
 const button = new Gpio(17, 'in', 'falling', { debounceTimeout: 50 })
 
-let isRecording = false
-
 const infoFile = 'info.json'
 const databaseFile = 'database.csv'
 
@@ -21,6 +19,7 @@ const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
 let info = {
+  isRecording: false,
   fillingLine: '',
   product: '',
   startTimestamp: '',
@@ -82,7 +81,7 @@ function average () {
 }
 
 function updateInfo () {
-  if (isRecording && info.startTimestamp !== '') {
+  if (info.isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
     info.averageUnitPerUnitTime = Math.round(average())
   }
@@ -112,10 +111,10 @@ function pushToClients (data) {
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
   client.on('start', function () {
-    isRecording = true
+    info.isRecording = true
   })
   client.on('stop', function () {
-    isRecording = false
+    info.isRecording = false
     info.endTimestamp = new Date()
     info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
     info.averageUnitPerUnitTime = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
@@ -124,7 +123,7 @@ io.on('connection', function (client) {
 
 button.watch((err) => {
   if (err) throw err
-  if (isRecording) {
+  if (info.isRecording) {
     const timeStamp = new Date()
     info.count++
     if (info.count === 1) {
