@@ -8,8 +8,6 @@ const fs = require('fs')
 const Gpio = require('onoff').Gpio
 const button = new Gpio(17, 'in', 'falling', { debounceTimeout: 50 })
 
-let isRecording = false
-
 const infoFile = 'info.json'
 const databaseFile = 'database.csv'
 
@@ -21,13 +19,15 @@ const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
 let info = {
+  isRecording: false,
   fillingLine: '',
   product: '',
   startTimestamp: '',
   endTimestamp: '',
   count: '',
   totalTime: '',
-  averageUnitPerUnitTime: '',
+  average: '',
+  runningAverage: '',
   bracketSizeRunningAverage: 5
 }
 
@@ -56,13 +56,6 @@ fs.access(databaseFile, (err) => {
   }
 })
 
-function updateInfo () {
-  io.emit('updateInfo', info)
-  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
-    if (err) throw err
-  })
-}
-
 function writeToDatabase (data) {
   fs.appendFile(databaseFile, data + '\n', function (err) {
     if (err) throw err
@@ -81,8 +74,24 @@ function deltaTimestamp (initial, final) {
 }
 
 function runningAverage () {
-  return (info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
+  return Math.round(info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
 }
+
+function average () {
+  return Math.round(info.count * perUnitTime / deltaTimestamp(info.startTimestamp, new Date()))
+}
+
+function updateInfo () {
+  if (info.isRecording && info.startTimestamp !== '') {
+    info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
+    info.average = average()
+  }
+  io.emit('updateInfo', info)
+  fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
+    if (err) throw err
+  })
+}
+setInterval(updateInfo, 100)
 
 function formatTimestamp (timeStamp) {
   const dateTime = new Date(timeStamp)
@@ -102,31 +111,30 @@ function pushToClients (data) {
 
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
-  updateInfo()
   client.on('start', function () {
-    isRecording = true
+    info.isRecording = true
   })
   client.on('stop', function () {
-    isRecording = false
+    if (!info.isRecording) return
+    info.isRecording = false
     info.endTimestamp = new Date()
     info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
-    info.averageUnitPerUnitTime = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
-    updateInfo()
+    info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
   })
 })
 
 button.watch((err) => {
   if (err) throw err
-  if (isRecording) {
+  if (info.isRecording) {
     const timeStamp = new Date()
     info.count++
     if (info.count === 1) {
       info.startTimestamp = new Date()
     }
-    updateInfo()
     updateBracket(timeStamp)
-    writeToDatabase(String(info.count + ',' + Math.round(runningAverage()) + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
-    pushToClients('[ ' + info.count + ' ]' + '[ ' + Math.round(runningAverage()) + ' ]' + formatTimestamp(timeStamp))
+    info.runningAverage = runningAverage()
+    writeToDatabase(String(info.count + ',' + info.runningAverage + ',' + timeStamp.getHours() + ',' + timeStamp.getMinutes() + ',' + timeStamp.getSeconds() + ',' + timeStamp.getDate() + ',' + Number(timeStamp.getMonth() + 1) + ',' + timeStamp.getFullYear()) + ',' + timeStamp)
+    pushToClients('[ ' + info.count + ' ]' + '[ ' + info.runningAverage + ' ]' + formatTimestamp(timeStamp))
   }
 })
 

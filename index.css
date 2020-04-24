@@ -63,7 +63,7 @@ h1 {
 }
 
 label {
-    width: 175px;
+    width: 206px;
     font-size: 16px;
     display: inline-block;
 }
@@ -71,5 +71,13 @@ label {
 #product {
     font-weight: bold;
     text-transform: uppercase;
-    width: 442px;
+    width: 410px;
 }
+#dot {
+    height: 25px;
+    width: 25px;
+    background-color: gray;
+    vertical-align: middle;
+    border-radius: 50%;
+    display: inline-block;
+  }

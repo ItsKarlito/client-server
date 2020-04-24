@@ -48,12 +48,14 @@ socket.on('clearBox', function () {
 })
 
 socket.on('updateInfo', function (data) {
+  if (data.isRecording !== '') document.getElementById('dot').style.background = data.isRecording ? 'green' : 'red'
   if (data.fillingLine !== '') document.getElementById('line').value = data.fillingLine
   if (data.product !== '') document.getElementById('product').value = data.product
   if (data.startTimestamp !== '') document.getElementById('start').value = formatTimestamp(data.startTimestamp)
   if (data.endTimestamp !== '') document.getElementById('end').value = formatTimestamp(data.endTimestamp)
   if (data.count !== '') document.getElementById('count').value = data.count
   if (data.totalTime !== '') document.getElementById('totalTime').value = formatTotalTime(data.totalTime)
-  if (data.averageUnitPerUnitTime !== '') document.getElementById('average').value = data.averageUnitPerUnitTime
+  if (data.average !== '') document.getElementById('average').value = data.average
+  if (data.runningAverage !== '') document.getElementById('runningAverage').value = data.runningAverage
   if (data.bracketSizeRunningAverage !== '') document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage
 })

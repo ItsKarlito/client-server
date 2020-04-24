@@ -22,6 +22,13 @@ Use a RaspberryPi as a web server and push data in real time to clients on the s
          - StandardJS (service to lint and format JavaScript code using JavaScript Standard Style)
          
              [![js-standard-style](images/js_standard_code_style_badge.svg)](http://standardjs.com)
+             
+             
+### General
+
+This repository tries to follow GitFlow guidelines.
+
+ ![js-standard-style](images/gitflow.svg)
         
 ### Helpful Tutorials
 
