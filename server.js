@@ -83,7 +83,7 @@ function average () {
 
 function updateInfo () {
   info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
-  info.averageUnitPerUnitTime = average()
+  info.averageUnitPerUnitTime = Math.round(average())
   io.emit('updateInfo', info)
   fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
     if (err) throw err
