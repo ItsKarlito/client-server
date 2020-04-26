@@ -52,14 +52,14 @@ socket.on('clearBox', function () {
 })
 
 socket.on('updateInfo', function (data) {
-  data.isRecording !== '' ? document.getElementById('dot').style.background = data.isRecording ? 'green' : 'red' : document.getElementById('dot').style.background = 'gray'
-  data.fillingLine !== '' ? document.getElementById('line').value = data.fillingLine : document.getElementById('line').placeholder = "filling line"
-  data.product !== '' ? document.getElementById('product').value = data.product : document.getElementById('product').placeholder = "product name"
-  data.startTimestamp !== '' ? document.getElementById('start').value = formatTimestamp(data.startTimestamp) : document.getElementById('start').placeholder = "start time"
-  data.endTimestamp !== '' ? document.getElementById('end').value = formatTimestamp(data.endTimestamp) : document.getElementById('end').placeholder = "end time"
-  data.count !== '' ? document.getElementById('count').value = data.count : document.getElementById('count').placeholder = "0"
-  data.totalTime !== '' ? document.getElementById('totalTime').value = formatTotalTime(data.totalTime) : document.getElementById('totalTime').placeholder = "00:00:00"
-  data.average !== '' ? document.getElementById('average').value = data.average : document.getElementById('average').placeholder = "0"
-  data.runningAverage !== '' ? document.getElementById('runningAverage').value = data.runningAverage : document.getElementById('runningAverage').placeholder = "0"
-  data.bracketSizeRunningAverage !== '' ? document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage : document.getElementById('bracketSizeRunningAverage').placeholder = "0"
+  document.getElementById('dot').style.background = data.isRecording ? 'green' : 'red'
+  data.fillingLine !== '' && !data.isReset ? document.getElementById('line').value = data.fillingLine : document.getElementById('line').placeholder = 'filling line'
+  data.product !== '' && !data.isReset ? document.getElementById('product').value = data.product : document.getElementById('product').placeholder = 'product name'
+  data.startTimestamp !== '' && !data.isReset ? document.getElementById('start').value = formatTimestamp(data.startTimestamp) : document.getElementById('start').placeholder = 'start time'
+  data.endTimestamp !== '' && !data.isReset ? document.getElementById('end').value = formatTimestamp(data.endTimestamp) : document.getElementById('end').placeholder = 'end time'
+  data.count !== '' && !data.isReset ? document.getElementById('count').value = data.count : document.getElementById('count').placeholder = '0'
+  data.totalTime !== '' && !data.isReset ? document.getElementById('totalTime').value = formatTotalTime(data.totalTime) : document.getElementById('totalTime').placeholder = '00:00:00'
+  data.average !== '' && !data.isReset ? document.getElementById('average').value = data.average : document.getElementById('average').placeholder = '0'
+  data.runningAverage !== '' && !data.isReset ? document.getElementById('runningAverage').value = data.runningAverage : document.getElementById('runningAverage').placeholder = '0'
+  document.getElementById('bracketSizeRunningAverage').value = data.bracketSizeRunningAverage
 })

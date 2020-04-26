@@ -23,6 +23,7 @@ let resetFlag = false
 let info = {}
 
 function setDefaultInfo () {
+  info.isReset = false
   info.isRecording = false
   info.fillingLine = ''
   info.product = ''
@@ -96,6 +97,7 @@ function updateInfo () {
   fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
     if (err) throw err
   })
+  info.isReset = false
 }
 setInterval(updateInfo, 100)
 
@@ -133,8 +135,8 @@ io.on('connection', function (client) {
       case 3: // reset
         if (resetFlag) return
         resetFlag = true
-        info.isRecording = false
         setDefaultInfo()
+        info.isReset = true
         fs.unlinkSync(infoFile)
         fs.unlinkSync(databaseFile)
         resetFlag = false
