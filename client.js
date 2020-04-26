@@ -3,11 +3,15 @@ const socket = io.connect('http://192.168.2.219:3000')
 const box = document.getElementById('box')
 
 function start () {
-  socket.emit('start')
+  socket.emit('button', 1)
 }
 
 function stop () {
-  socket.emit('stop')
+  socket.emit('button', 2)
+}
+
+function reset () {
+  socket.emit('button', 3)
 }
 
 function formatTimestamp (timeStamp) {

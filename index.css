@@ -22,7 +22,7 @@ h1 {
     font-size: 16px;
     transition-duration: 0s;
     cursor: pointer;
-    width: 205px;
+    width: 153px;
 }
   
 .button1 {
@@ -55,6 +55,17 @@ h1 {
   
 .button3:hover {
     background-color: blue;
+    color: white;
+}
+
+.button4 {
+    background-color: white; 
+    color: orange; 
+    border: 2px solid orange;
+}
+  
+.button4:hover {
+    background-color: orange;
     color: white;
 }
 

@@ -18,7 +18,9 @@ let boxCount = 0
 const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
-let info = {
+let resetFlag = false
+
+let infoDefault = {
   isRecording: false,
   fillingLine: '',
   product: '',
@@ -29,6 +31,19 @@ let info = {
   average: '',
   runningAverage: '',
   bracketSizeRunningAverage: 5
+}
+
+let info = {
+  isRecording: infoDefault.isRecording,
+  fillingLine: infoDefault.fillingLine,
+  product: infoDefault.product,
+  startTimestamp: infoDefault.startTimestamp,
+  endTimestamp: infoDefault.endTimestamp,
+  count: infoDefault.count,
+  totalTime: infoDefault.totalTime,
+  average: infoDefault.average,
+  runningAverage: infoDefault.runningAverage,
+  bracketSizeRunningAverage: infoDefault.bracketSizeRunningAverage
 }
 
 app.use(express.static(__dirname))
@@ -82,6 +97,7 @@ function average () {
 }
 
 function updateInfo () {
+  if (resetFlag) return
   if (info.isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
     info.average = average()
@@ -111,15 +127,31 @@ function pushToClients (data) {
 
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
-  client.on('start', function () {
-    info.isRecording = true
-  })
-  client.on('stop', function () {
-    if (!info.isRecording) return
-    info.isRecording = false
-    info.endTimestamp = new Date()
-    info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
-    info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
+  client.on('button', function (id) {
+    switch (id) {
+      case 1: // start
+        if (info.isRecording) return
+        info.isRecording = true
+        break;
+      case 2: // stop
+        if (!info.isRecording) return
+        info.isRecording = false
+        info.endTimestamp = new Date()
+        info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
+        info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
+        break;
+      case 3: // reset
+        if (resetFlag) return
+        resetFlag = true        
+        info = infoDefault
+        fs.unlinkSync(infoFile)
+        fs.unlinkSync(databaseFile)
+        resetFlag = false
+        updateInfo()
+        break;
+      default:
+        break;
+    }
   })
 })
 
