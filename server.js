@@ -20,31 +20,21 @@ const serverGreeting = 'connected to server...'
 
 let resetFlag = false
 
-let infoDefault = {
-  isRecording: false,
-  fillingLine: '',
-  product: '',
-  startTimestamp: '',
-  endTimestamp: '',
-  count: '',
-  totalTime: '',
-  average: '',
-  runningAverage: '',
-  bracketSizeRunningAverage: 5
-}
+let info = {}
 
-let info = {
-  isRecording: infoDefault.isRecording,
-  fillingLine: infoDefault.fillingLine,
-  product: infoDefault.product,
-  startTimestamp: infoDefault.startTimestamp,
-  endTimestamp: infoDefault.endTimestamp,
-  count: infoDefault.count,
-  totalTime: infoDefault.totalTime,
-  average: infoDefault.average,
-  runningAverage: infoDefault.runningAverage,
-  bracketSizeRunningAverage: infoDefault.bracketSizeRunningAverage
+function setDefaultInfo () {
+  info.isRecording = false
+  info.fillingLine = ''
+  info.product = ''
+  info.startTimestamp = ''
+  info.endTimestamp = ''
+  info.count = ''
+  info.totalTime = ''
+  info.average = ''
+  info.runningAverage = ''
+  info.bracketSizeRunningAverage = 5
 }
+setDefaultInfo()
 
 app.use(express.static(__dirname))
 app.use(express.static(path.join(__dirname, '/database.csv')))
@@ -132,25 +122,25 @@ io.on('connection', function (client) {
       case 1: // start
         if (info.isRecording) return
         info.isRecording = true
-        break;
+        break
       case 2: // stop
         if (!info.isRecording) return
         info.isRecording = false
         info.endTimestamp = new Date()
         info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
         info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
-        break;
+        break
       case 3: // reset
         if (resetFlag) return
-        resetFlag = true        
-        info = infoDefault
+        resetFlag = true
+        info.isRecording = false
+        setDefaultInfo()
         fs.unlinkSync(infoFile)
         fs.unlinkSync(databaseFile)
         resetFlag = false
-        updateInfo()
-        break;
+        break
       default:
-        break;
+        break
     }
   })
 })
