@@ -22,7 +22,7 @@ h1 {
     font-size: 16px;
     transition-duration: 0s;
     cursor: pointer;
-    width: 205px;
+    width: 153px;
 }
   
 .button1 {
@@ -58,6 +58,17 @@ h1 {
     color: white;
 }
 
+.button4 {
+    background-color: white; 
+    color: orange; 
+    border: 2px solid orange;
+}
+  
+.button4:hover {
+    background-color: orange;
+    color: white;
+}
+
 #download {
     background-color: wheat;
 }
@@ -76,7 +87,6 @@ label {
 #dot {
     height: 25px;
     width: 25px;
-    background-color: gray;
     vertical-align: middle;
     border-radius: 50%;
     display: inline-block;

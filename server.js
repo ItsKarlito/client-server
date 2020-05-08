@@ -18,18 +18,24 @@ let boxCount = 0
 const boxMaxItemCount = 1000
 const serverGreeting = 'connected to server...'
 
-let info = {
-  isRecording: false,
-  fillingLine: '',
-  product: '',
-  startTimestamp: '',
-  endTimestamp: '',
-  count: '',
-  totalTime: '',
-  average: '',
-  runningAverage: '',
-  bracketSizeRunningAverage: 5
+let resetFlag = false
+
+let info = {}
+
+function setDefaultInfo () {
+  info.isReset = false
+  info.isRecording = false
+  info.fillingLine = ''
+  info.product = ''
+  info.startTimestamp = ''
+  info.endTimestamp = ''
+  info.count = ''
+  info.totalTime = ''
+  info.average = ''
+  info.runningAverage = ''
+  info.bracketSizeRunningAverage = 5
 }
+setDefaultInfo()
 
 app.use(express.static(__dirname))
 app.use(express.static(path.join(__dirname, '/database.csv')))
@@ -82,6 +88,7 @@ function average () {
 }
 
 function updateInfo () {
+  if (resetFlag) return
   if (info.isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
     info.average = average()
@@ -90,6 +97,7 @@ function updateInfo () {
   fs.writeFile(infoFile, JSON.stringify(info) + '\n', function (err) {
     if (err) throw err
   })
+  info.isReset = false
 }
 setInterval(updateInfo, 100)
 
@@ -111,15 +119,36 @@ function pushToClients (data) {
 
 io.on('connection', function (client) {
   client.emit('broad', serverGreeting)
-  client.on('start', function () {
-    info.isRecording = true
-  })
-  client.on('stop', function () {
-    if (!info.isRecording) return
-    info.isRecording = false
-    info.endTimestamp = new Date()
-    info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
-    info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
+  client.on('button', function (id) {
+    switch (id) {
+      case 1: // start
+        if (info.isRecording) return
+        info.isRecording = true
+        break
+      case 2: // stop
+        if (!info.isRecording) return
+        info.isRecording = false
+        info.endTimestamp = new Date()
+        info.totalTime = deltaTimestamp(info.startTimestamp, info.endTimestamp)
+        info.average = Math.round((info.count * perUnitTime / deltaTimestamp(info.startTimestamp, info.endTimestamp)))
+        break
+      case 3: // reset
+        if (resetFlag) return
+        resetFlag = true
+        setDefaultInfo()
+        bracket.length = 0
+        info.isReset = true
+        if (fs.existsSync(infoFile)) {
+          fs.unlinkSync(infoFile)
+        }
+        if (fs.existsSync(databaseFile)) {
+          fs.unlinkSync(databaseFile)
+        }
+        resetFlag = false
+        break
+      default:
+        break
+    }
   })
 })
 
