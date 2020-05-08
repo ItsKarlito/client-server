@@ -136,9 +136,14 @@ io.on('connection', function (client) {
         if (resetFlag) return
         resetFlag = true
         setDefaultInfo()
+        bracket.length = 0
         info.isReset = true
-        fs.unlinkSync(infoFile)
-        fs.unlinkSync(databaseFile)
+        if (fs.existsSync(infoFile)) {
+          fs.unlinkSync(infoFile)
+        }
+        if (fs.existsSync(databaseFile)) {
+          fs.unlinkSync(databaseFile)
+        }
         resetFlag = false
         break
       default:
