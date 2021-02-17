@@ -2,22 +2,22 @@ const socket = io.connect('http://192.168.2.219:3000')
 
 const box = document.getElementById('box')
 
-function start () {
+function start() {
   socket.emit('start')
 }
 
-function stop () {
+function stop() {
   socket.emit('stop')
 }
 
-function formatTimestamp (timeStamp) {
+function formatTimestamp(timeStamp) {
   const dateTime = new Date(timeStamp)
   const formatedDate = `${dateTime.getDate()}/${dateTime.getMonth() + 1}/${dateTime.getFullYear()}`
   const formatedTime = dateTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false })
   return String(formatedTime + ' - ' + formatedDate)
 }
 
-function formatTotalTime (ms) {
+function formatTotalTime(ms) {
   var delta = Math.abs(ms) / 1000
   var days = Math.floor(delta / 86400)
   delta -= days * 86400

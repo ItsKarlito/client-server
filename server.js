@@ -56,32 +56,32 @@ fs.access(databaseFile, (err) => {
   }
 })
 
-function writeToDatabase (data) {
+function writeToDatabase(data) {
   fs.appendFile(databaseFile, data + '\n', function (err) {
     if (err) throw err
   })
 }
 
-function updateBracket (timeStamp) {
+function updateBracket(timeStamp) {
   if (bracket.length >= info.bracketSizeRunningAverage + 1) {
     bracket.shift()
   }
   bracket.push(timeStamp)
 }
 
-function deltaTimestamp (initial, final) {
+function deltaTimestamp(initial, final) {
   return (new Date(final) - new Date(initial))
 }
 
-function runningAverage () {
+function runningAverage() {
   return Math.round(info.bracketSizeRunningAverage * perUnitTime / deltaTimestamp(bracket[0], bracket[info.bracketSizeRunningAverage]))
 }
 
-function average () {
+function average() {
   return Math.round(info.count * perUnitTime / deltaTimestamp(info.startTimestamp, new Date()))
 }
 
-function updateInfo () {
+function updateInfo() {
   if (info.isRecording && info.startTimestamp !== '') {
     info.totalTime = deltaTimestamp(info.startTimestamp, new Date())
     info.average = average()
@@ -93,14 +93,14 @@ function updateInfo () {
 }
 setInterval(updateInfo, 100)
 
-function formatTimestamp (timeStamp) {
+function formatTimestamp(timeStamp) {
   const dateTime = new Date(timeStamp)
   const formatedDate = `${dateTime.getDate()}/${dateTime.getMonth() + 1}/${dateTime.getFullYear()}`
   const formatedTime = dateTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false })
   return String('[ ' + formatedTime + ' - ' + formatedDate + ' ]')
 }
 
-function pushToClients (data) {
+function pushToClients(data) {
   if (boxCount >= boxMaxItemCount) {
     boxCount = 0
     io.emit('clearBox')
